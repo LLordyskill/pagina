@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Árbol de Decisiones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .layer {
+            display: none;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .layer.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .layer-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .options {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            padding: 1.5rem 2.5rem;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 200px;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #ff5252, #d84315);
+        }
+
+        .option-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .option-btn.option-b {
+            background: linear-gradient(45deg, #4834d4, #686de0);
+        }
+
+        .option-btn.option-b:hover {
+            background: linear-gradient(45deg, #3742fa, #5f27cd);
+        }
+
+        .final-text {
+            font-size: 4rem;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            animation: pulse 2s infinite alternate;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 2rem 0;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .path-display {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+
+        .restart-btn {
+            background: linear-gradient(45deg, #2ed573, #1e90ff);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .question {
+                font-size: 1.8rem;
+            }
+            
+            .final-text {
+                font-size: 2.5rem;
+            }
+            
+            .options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .option-btn {
+                min-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="layer-counter" id="layerCounter">Capa 1 de 6</div>
+        
+        <!-- Capa 1 -->
+        <div class="layer active" id="layer1">
+            <h2 class="question">¿Preferis Invierno o Verano?</h2>
+            <div class="options">
+                <button class="option-btn" onclick="nextLayer('invierno')">Invierno</button>
+                <button class="option-btn option-b" onclick="nextLayer('verano')">Verano</button>
+            </div>
+        </div>
+
+        <!-- Capa 2 -->
+        <div class="layer" id="layer2">
+            <h2 class="question">Buzos o Camperas?</h2>
+            <div class="options">
+                <button class="option-btn" onclick="nextLayer('Buzos')">Buzos</button>
+                <button class="option-btn option-b" onclick="nextLayer('Camperas')">Camperas</button>
+            </div>
+        </div>
+
+        <!-- Capa 3 -->
+        <div class="layer" id="layer3">
+            <h2 class="question">¿Ver Reels o Tik Toks?</h2>
+            <div class="options">
+                <button class="option-btn" onclick="nextLayer('Reels')">Reels</button>
+                <button class="option-btn option-b" onclick="nextLayer('Tik Toks')">Tik Toks</button>
+            </div>
+        </div>
+
+        <!-- Capa 4 -->
+        <div class="layer" id="layer4">
+            <h2 class="question">¿Día o noche?</h2>
+            <div class="options">
+                <button class="option-btn" onclick="nextLayer('día')">Día</button>
+                <button class="option-btn option-b" onclick="nextLayer('noche')">Noche</button>
+            </div>
+        </div>
+
+        <!-- Capa 5 -->
+        <div class="layer" id="layer5">
+            <h2 class="question">¿Mate si o no?</h2>
+            <div class="options">
+                <button class="option-btn" onclick="nextLayer('Si')">Si</button>
+                <button class="option-btn option-b" onclick="nextLayer('No')">No</button>
+            </div>
+        </div>
+
+        <!-- Capa 6 -->
+        <div class="layer" id="layer6">
+            <h2 class="question">¿Ojos Verdes o Celestes?</h2>
+            <div class="options">
+                <button class="option-btn" onclick="nextLayer('Verdes')">Verdes</button>
+                <button class="option-btn option-b" onclick="nextLayer('Celestes')">Celestes</button>
+            </div>
+        </div>
+
+        <!-- Resultado Final -->
+        <div class="layer" id="final">
+            <div class="final-text">¡FELICIDADES!</div>
+            <p style="font-size: 1.5rem; margin: 1rem 0;">Da igual que respondieras el resultado es que me gustas💕</p>
+            <div class="path-display" id="pathDisplay">
+                Tu camino fue: <span id="userPath"></span>
+            </div>
+            <button class="restart-btn" onclick="restart()">Empezar de Nuevo</button>
+        </div>
+    </div>
+
+    <script>
+        let currentLayer = 1;
+        let userChoices = [];
+
+        function nextLayer(choice) {
+            // Guardar la elección del usuario
+            userChoices.push(choice);
+            
+            // Ocultar la capa actual
+            document.getElementById(`layer${currentLayer}`).classList.remove('active');
+            
+            // Avanzar a la siguiente capa
+            currentLayer++;
+            
+            if (currentLayer <= 6) {
+                // Mostrar la siguiente capa
+                document.getElementById(`layer${currentLayer}`).classList.add('active');
+                
+                // Actualizar contador
+                document.getElementById('layerCounter').textContent = `Capa ${currentLayer} de 6`;
+            } else {
+                // Mostrar resultado final
+                showFinalResult();
+            }
+        }
+
+        function showFinalResult() {
+            // Ocultar contador
+            document.getElementById('layerCounter').style.display = 'none';
+            
+            // Mostrar capa final
+            document.getElementById('final').classList.add('active');
+            
+            // Mostrar el camino elegido
+            document.getElementById('userPath').textContent = userChoices.join(' → ');
+        }
+
+        function restart() {
+            // Resetear variables
+            currentLayer = 1;
+            userChoices = [];
+            
+            // Ocultar todas las capas
+            const layers = document.querySelectorAll('.layer');
+            layers.forEach(layer => layer.classList.remove('active'));
+            
+            // Mostrar primera capa
+            document.getElementById('layer1').classList.add('active');
+            
+            // Mostrar y resetear contador
+            document.getElementById('layerCounter').style.display = 'block';
+            document.getElementById('layerCounter').textContent = 'Capa 1 de 6';
+        }
+
+        // Agregar efectos de sonido visual al hacer click
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('option-btn')) {
+                // Crear efecto de ripple
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.left = (e.pageX - e.target.offsetLeft - 10) + 'px';
+                ripple.style.top = (e.pageY - e.target.offsetTop - 10) + 'px';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                
+                e.target.style.position = 'relative';
+                e.target.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            }
+        });
+
+        // CSS para el efecto ripple
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
